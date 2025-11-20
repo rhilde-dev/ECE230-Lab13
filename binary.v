@@ -3,15 +3,11 @@ module binary(
     input clk,
     input reset,
     output z,
-    output yzero,yone,ytwo
+    output [2:0] out
 );
 
     wire [2:0] State;
     wire [2:0] Next;
-    
-    assign yzero = State[0];
-    assign yone = State[1];
-    assign ytwo = State[2];
 
     dff zero(
         .Default(1'b0),
@@ -37,10 +33,12 @@ module binary(
         .Q(State[2])
     );
     
+    assign out = State;
     
-    assign z = (~State[2] & State[1] & ~State[0])| (State[2] & ~State[1] & ~State[0]); //D or E 
-    assign Next[0] = (~State[2] & ~State[1] & ~State[0]) | (~State[2] & ~State[0] & w) | (~State[2] & ~State[1] & w) | (State[2] & ~State[1] & ~State[0] & ~w) | (~State[2] & State[1] & State[0] & ~w);
-    assign Next[1] = (~State[1] & State[0]) | (State[1] & ~State[0]) | (~State[2] & ~State[1] & w);
-    assign Next[2] = (State[2] & State[0]) | (State[1] & State[0] & w);
+    assign z = (~State[2] & State[1] & ~State[0])| (State[2] & ~State[1] & ~State[0]); //C or E 
+    assign Next[0] = ~w & (~State[1] & ~State[0] | ~State[2] & State[1] & State[0]) | w & (~State[2] & ~State[0] | ~State[2] & ~State[1]);
+    //(~State[2] & ~State[1] & ~State[0]) | (~State[2] & ~State[0] & w) | (~State[2] & ~State[1] & w) | (State[2] & ~State[1] & ~State[0] & ~w) | (~State[2] & State[1] & State[0] & ~w);
+    assign Next[1] = ~State[2] & ((State[1] & ~State[0]) | (~State[0] & w)) | (~State[1] & State[0]);
+    assign Next[2] = w & ((State[2] & ~State[1] & ~State[0]) | (~State[2] & State[1] & State[0]));
 
 endmodule
