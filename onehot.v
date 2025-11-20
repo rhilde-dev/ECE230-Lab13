@@ -1,11 +1,18 @@
-module one_hot(
+module onehot(
     input w,
     input clk,
     input reset,
-    output z
+    output z,
+    output a,b,c,d,e
 );
     wire Anext, Bnext, Cnext, Dnext, Enext;
     wire Astate, Bstate, Cstate, Dstate, Estate;
+    
+    assign a = Astate;
+    assign b = Bstate;
+    assign c = Cstate;
+    assign d = Dstate;
+    assign e = Estate;
 
     dff Adff(
         .Default(1'b1),
@@ -47,7 +54,7 @@ module one_hot(
         .Q(Estate)
     );
 
-    assign z = Cstate;
+    assign z = Cstate | Estate;
 
     assign Anext = 1'b0;
     assign Bnext = ~w & (Astate | Dstate | Estate);
